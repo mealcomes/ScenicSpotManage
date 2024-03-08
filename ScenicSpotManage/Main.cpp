@@ -32,6 +32,9 @@ int main() {
 			std::cout << "\n\n";
 			break;
 		case 5:
+			std::cout << "=====铺设电路规划=====\n";
+			DesignPath();
+			std::cout << "\n\n";
 			break;
 		case 0:
 			std::cout << "欢迎下次使用！";

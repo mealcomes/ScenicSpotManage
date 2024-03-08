@@ -1,3 +1,4 @@
+#pragma warning(disable:6031 6262 6385)
 #include <string.h>
 #include <vector>
 
@@ -76,11 +77,11 @@ void dfs(m_Graph& graph, int nVex, std::vector<bool>& visited) {
 
 /*Dijkstra找最短路径*/
 int findShortPath(m_Graph& graph, int start, int end, std::vector<int>& shortPath) {
-	std::vector<bool> isAdded(graph.m_nVexNum, false);
-	std::vector<int> preVex(graph.m_nVexNum);
-	std::vector<int> minDis(graph.m_nVexNum);
+	std::vector<bool> isAdded(graph.m_nVexNum, false);  //标志数组
+	std::vector<int> preVex(graph.m_nVexNum);           //最短路径中当前点的前一个点
+	std::vector<int> minDis(graph.m_nVexNum);           //每一个点最短路径的长度
 	isAdded[start] = true;
-	for (int i = 0; i < graph.m_nVexNum; i++) {
+	for (int i = 0; i < graph.m_nVexNum; i++) {         //初始化
 		minDis[i] = ((graph.m_aAdjMatrix[start][i] == 0 && start != i) ? INT_MAX : graph.m_aAdjMatrix[start][i]);
 		if (minDis[i] != INT_MAX && i != start)
 			preVex[i] = start;
@@ -89,14 +90,14 @@ int findShortPath(m_Graph& graph, int start, int end, std::vector<int>& shortPat
 		else
 			preVex[i] = -1;
 	}
-	for (int j = 0; j < graph.m_nVexNum - 1; j++) {
+	for (int j = 0; j < graph.m_nVexNum - 1; j++) {     //分别处理另外n个点
 		int minVex = -1;
-		for (int i = 0; i < graph.m_nVexNum; i++) {
-			if(!isAdded[i] && (minVex == -1 || minDis[i] < minDis[minVex]))
+		for (int i = 0; i < graph.m_nVexNum; i++) {     //在还未确定最短路径的点中找距离最短的点
+			if (!isAdded[i] && (minVex == -1 || minDis[i] < minDis[minVex]))
 				minVex = i;
 		}
 		isAdded[minVex] = true;
-		for (int i = 0; i < graph.m_nVexNum; i++) {
+		for (int i = 0; i < graph.m_nVexNum; i++) {     //用这个距离最短的点更新其他点信息
 			if (graph.m_aAdjMatrix[minVex][i] && minDis[i] > minDis[minVex] + graph.m_aAdjMatrix[minVex][i]) {
 				minDis[i] = minDis[minVex] + graph.m_aAdjMatrix[minVex][i];
 				preVex[i] = minVex;
@@ -112,4 +113,41 @@ int findShortPath(m_Graph& graph, int start, int end, std::vector<int>& shortPat
 		shortPathVex = preVex[shortPathVex];
 	}
 	return length;
+}
+
+/*prim生成最小生成树*/
+int finfMinTree(m_Graph graph, std::vector<Edge>& treeEdges) {
+	std::vector<bool> isAdd(graph.m_nVexNum, false);
+	std::vector<int> minDis(graph.m_nVexNum);
+	int weight = 0;
+	isAdd[0] = true;
+	for (int i = 1; i < graph.m_nVexNum; i++) {
+		minDis[i] = ((graph.m_aAdjMatrix[i][0] == 0 && i != 0) ? INT_MAX : graph.m_aAdjMatrix[i][0]);
+	}
+	for (int j = 0; j < graph.m_nVexNum - 1; j++) {
+		int minVex = -1;
+		for (int i = 0; i < graph.m_nVexNum; i++) {
+			if (!isAdd[i] && (minVex == -1 || minDis[i] < minDis[minVex])) {
+				minVex = i;
+			}
+		}
+		if (!j && minDis[minVex] == INT_MAX)
+			return -1;
+
+		//寻找本次加入的顶点对应的边
+		for (int i = 0; i < graph.m_nVexNum; i++) {
+			if (isAdd[i] && graph.m_aAdjMatrix[i][minVex] == minDis[minVex]) {
+				treeEdges.push_back({ minVex, i, graph.m_aAdjMatrix[minVex][i] });
+				break;
+			}
+		}
+
+		weight += minDis[minVex];
+		isAdd[minVex] = true;
+		for (int i = 0; i < graph.m_nVexNum; i++) {
+			if (graph.m_aAdjMatrix[minVex][i])
+				minDis[i] = std::min(minDis[i], graph.m_aAdjMatrix[minVex][i]);
+		}
+	}
+	return weight;
 }

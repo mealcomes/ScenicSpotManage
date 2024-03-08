@@ -1,4 +1,5 @@
-﻿#include <fstream>
+﻿#pragma warning(disable:6031)
+#include <fstream>
 #include <sstream>
 #include <iostream>
 #include <vector>
@@ -82,6 +83,7 @@ void travelPath() {
 	}
 }
 
+/*景点导航*/
 void findShortPath() {
 	for (int i = 0; i < graph.m_nVexNum; i++)
 		std::wcout << graph.m_aVexs[i].vexCount << "-" << graph.m_aVexs[i].name[0] << "区\n";
@@ -105,4 +107,17 @@ void findShortPath() {
 	}
 	_setmode(_fileno(stdout), previous);        //输出解码模式恢复
 	std::cout << "\n最短距离为：" << shortDis << '\n';
+}
+
+/*铺设电路*/
+void DesignPath() {
+	std::vector<Edge> treeEdges;
+	int weight = finfMinTree(graph, treeEdges);
+	std::cout << "在以下两个景点之间铺设电路:\n";
+	int previous = _setmode(_fileno(stdout), _O_U8TEXT);	//转化为utf-8解码输出，并保留先前的解码模式
+	for (auto treeEdge : treeEdges) {
+		std::wcout << graph.m_aVexs[treeEdge.vex1].name << L" - " << graph.m_aVexs[treeEdge.vex2].name << L" " << treeEdge.weight << "m\n";
+	}
+	_setmode(_fileno(stdout), previous);        //输出解码模式恢复
+	std::cout << "铺设电路总长度为: " << weight << "m\n";
 }
