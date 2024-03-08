@@ -35,7 +35,7 @@ void GetSpotInfo() {
 		std::cout << "当前无景点信息，请录入后查询!";
 		return;
 	}
-
+	
 	int previous = _setmode(_fileno(stdout), _O_U8TEXT);	//转化为utf-8解码输出，并保留先前的解码模式
 	for (int i = 0; i < graph.m_nVexNum; i++) {
 		std::wcout << graph.m_aVexs[i].vexCount << L"-" << graph.m_aVexs[i].name << "\n";
@@ -46,7 +46,7 @@ void GetSpotInfo() {
 	std::wcout << vex.name << "\n" << vex.desc << "\n";
 	std::wcout << L"-----周边景区-----\n";
 	for (int i = 0; i < graph.m_nVexNum; i++) {
-		if (graph.m_aAdjMatrix[vex.vexCount][i] < INT_MAX && vex.vexCount != i) {
+		if (graph.m_aAdjMatrix[vex.vexCount][i] != 0 && vex.vexCount != i) {
 			std::wcout << vex.name << L"->" << graph.m_aVexs[i].name << L" " << graph.m_aAdjMatrix[vex.vexCount][i] << L'\n';
 		}
 	}
@@ -80,4 +80,29 @@ void travelPath() {
 		}
 		std::cout << '\n';
 	}
+}
+
+void findShortPath() {
+	for (int i = 0; i < graph.m_nVexNum; i++)
+		std::wcout << graph.m_aVexs[i].vexCount << "-" << graph.m_aVexs[i].name[0] << "区\n";
+	std::cout << "请输入起点编号:";
+	int start = OptionInput(graph.m_nVexNum);
+	std::cout << "请输入终点编号:";
+	int end = OptionInput(graph.m_nVexNum);
+
+	std::vector<int> shortPath(graph.m_nVexNum);
+	int length = findShortPath(graph, start, end, shortPath);
+	std::cout << "最短路线为：";
+	int shortDis = 0;
+	int previous = _setmode(_fileno(stdout), _O_U8TEXT);	//转化为utf-8解码输出，并保留先前的解码模式
+	for (int i = length - 1; i >= 0; i--) {
+		if(i == length - 1)
+			std::wcout << graph.m_aVexs[shortPath[i]].name[0] << L"区";
+		else
+			std::wcout << L"->" << graph.m_aVexs[shortPath[i]].name[0] << L"区";
+		if(i > 0)
+			shortDis += graph.m_aAdjMatrix[shortPath[i]][shortPath[i - 1]];
+	}
+	_setmode(_fileno(stdout), previous);        //输出解码模式恢复
+	std::cout << "\n最短距离为：" << shortDis << '\n';
 }

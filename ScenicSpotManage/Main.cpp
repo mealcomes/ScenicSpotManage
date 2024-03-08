@@ -6,6 +6,7 @@
 #include "Tool.h"
 
 int main() {
+	std::string choice;
 	do {
 		MenuPrint();
 		std::cout << "ÇëÊäÈëÄúµÄÑ¡Ôñ(0-5):";
@@ -26,6 +27,9 @@ int main() {
 			std::cout << "\n\n";
 			break;
 		case 4:
+			std::cout << "=====ËÑË÷×î¶ÌÂ·¾¶=====\n";
+			findShortPath();
+			std::cout << "\n\n";
 			break;
 		case 5:
 			break;

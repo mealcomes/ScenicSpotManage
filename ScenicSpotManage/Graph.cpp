@@ -12,7 +12,7 @@ int ans = 0;
 void Init(m_Graph& graph) {
 	for (int i = 0; i < Maxsize; i++) {
 		for (int j = 0; j < Maxsize; j++)
-			graph.m_aAdjMatrix[i][j] = ((i == j) ? 0 : INT_MAX);
+			graph.m_aAdjMatrix[i][j] = 0;
 	}
 	graph.m_nVexNum = 0;
 }
@@ -58,7 +58,7 @@ std::vector<std::vector<int>> dfsTravel(m_Graph& graph, int nVex) {
 void dfs(m_Graph& graph, int nVex, std::vector<bool>& visited) {
 	Path[ans].push_back(nVex);   //将该点加入路径
 	for (int i = 0; i < graph.m_nVexNum; i++) {
-		if (!visited[i] && i != nVex && graph.m_aAdjMatrix[nVex][i] < INT_MAX) {
+		if (!visited[i] && i != nVex && graph.m_aAdjMatrix[nVex][i] != 0) {
 			visited[i] = true;
 			dfs(graph, i, visited);
 			visited[i] = false;
@@ -75,24 +75,41 @@ void dfs(m_Graph& graph, int nVex, std::vector<bool>& visited) {
 }
 
 /*Dijkstra找最短路径*/
-int findShortPath(m_Graph& graph, int start, int end, Edge shortPath[]) {
+int findShortPath(m_Graph& graph, int start, int end, std::vector<int>& shortPath) {
 	std::vector<bool> isAdded(graph.m_nVexNum, false);
+	std::vector<int> preVex(graph.m_nVexNum);
 	std::vector<int> minDis(graph.m_nVexNum);
 	isAdded[start] = true;
 	for (int i = 0; i < graph.m_nVexNum; i++) {
-		minDis[i] = graph.m_aAdjMatrix[start][i];
+		minDis[i] = ((graph.m_aAdjMatrix[start][i] == 0 && start != i) ? INT_MAX : graph.m_aAdjMatrix[start][i]);
+		if (minDis[i] != INT_MAX && i != start)
+			preVex[i] = start;
+		else if (i == start)
+			preVex[i] = i;
+		else
+			preVex[i] = -1;
 	}
-	for (int i = 0; i < graph.m_nVexNum - 1; i++) {
+	for (int j = 0; j < graph.m_nVexNum - 1; j++) {
 		int minVex = -1;
-		int Dis = INT_MAX;
 		for (int i = 0; i < graph.m_nVexNum; i++) {
-			if (minDis[i] < Dis && !isAdded[i])
+			if(!isAdded[i] && (minVex == -1 || minDis[i] < minDis[minVex]))
 				minVex = i;
 		}
 		isAdded[minVex] = true;
 		for (int i = 0; i < graph.m_nVexNum; i++) {
-			
+			if (graph.m_aAdjMatrix[minVex][i] && minDis[i] > minDis[minVex] + graph.m_aAdjMatrix[minVex][i]) {
+				minDis[i] = minDis[minVex] + graph.m_aAdjMatrix[minVex][i];
+				preVex[i] = minVex;
+			}
 		}
 	}
-	return 0;
+
+	int shortPathVex = end;
+	shortPath[0] = shortPathVex;
+	int length = 1;
+	while (shortPathVex != start) {
+		shortPath[length++] = preVex[shortPathVex];
+		shortPathVex = preVex[shortPathVex];
+	}
+	return length;
 }

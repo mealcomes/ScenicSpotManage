@@ -4,6 +4,7 @@
 bool CreateGraph();
 void GetSpotInfo();
 void travelPath();
+void findShortPath();
 
 
 #endif // !_TOURISM_H_

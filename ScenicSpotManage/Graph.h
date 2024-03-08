@@ -8,5 +8,7 @@ bool InsertEdge(m_Graph& graph, Edge edge);
 Vex GetVex(m_Graph& graph, int nVex);
 std::vector<std::vector<int>> dfsTravel(m_Graph& graph, int nVex);
 void dfs(m_Graph& graph, int nVex, std::vector<bool>& visited);
+int findShortPath(m_Graph& graph, int start, int end, std::vector<int>& shortPath);
+
 
 #endif // !1
