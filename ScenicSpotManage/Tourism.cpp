@@ -35,7 +35,7 @@ void GetSpotInfo() {
 		std::cout << "当前无景点信息，请录入后查询!";
 		return;
 	}
-
+	
 	int previous = _setmode(_fileno(stdout), _O_U8TEXT);	//转化为utf-8解码输出，并保留先前的解码模式
 	for (int i = 0; i < graph.m_nVexNum; i++) {
 		std::wcout << graph.m_aVexs[i].vexCount << L"-" << graph.m_aVexs[i].name << "\n";

@@ -6,6 +6,7 @@
 #include "Tool.h"
 
 int main() {
+	std::string choice;
 	do {
 		MenuPrint();
 		std::cout << "ÇëÊäÈëÄúµÄÑ¡Ôñ(0-5):";
